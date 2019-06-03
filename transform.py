@@ -1,15 +1,21 @@
 import re
 from sklearn.cluster import KMeans
 
+b19013_cols = {'HD01_VD01' : 'income_median'}
+b01002_cols = {'HD01_VD02': 'age_median'}
+b02001_cols = {'HD01_VD02': 'white', 'HD01_VD03':'African_American','HD01_VD04':'Native_American','HD01_VD05':'Asian',
+    'HD01_VD06':'Hawaiin', 'HD01_VD01':'pop_tot'}
+
 
 def geo_fix(df):
     df = df.copy()
     colnames = {'GEO.id2':'blockgroup'}
     df = df.drop(columns=['GEO.id','GEO.display-label']).rename(columns=colnames)
 
-    #Removes Margin of Error Fields
-    df =df[['blockgroup']+[col for col in df.columns[1:] if int(col[2:4]) == 1]]
     return df
+
+def drop_moe(df):
+    return df[['blockgroup']+[col for col in df.columns[1:] if int(col[2:4]) == 1]]
 
 
 def transform_B19001(df,drop_lowpop = True,add_percents=True):
@@ -69,8 +75,21 @@ def cluster_B19001(df):
 
 
 
-def transform_19013(df):
+def transform_B19013(df):
 
-    df = geo_fix(df)
+    df = drop_moe(geo_fix(df))
     df = df[1:]
-    return df.rename(columns={'HD01_VD01' : 'income_median'})
+    df = df.rename(columns=b19013_cols)
+    return df[['blockgroup']+list(b19013_cols.values())]
+
+def transform_B01002(df):
+    df = drop_moe(geo_fix(df))
+    df = df[1:]
+    df = df.rename(columns= b01002_cols)
+    return df[['blockgroup']+list(b01002_cols.values())]
+
+def transform_B02001(df):
+    df = drop_moe(geo_fix(df))
+    df = df[1:]
+    df = df.rename(columns=b02001_cols)
+    return df[['blockgroup']+list(b02001_cols.values())]
