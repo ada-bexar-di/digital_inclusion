@@ -2,6 +2,16 @@ import re
 from sklearn.cluster import KMeans
 
 
+def geo_fix(df):
+    df = df.copy()
+    colnames = {'GEO.id2':'blockgroup'}
+    df = df.drop(columns=['GEO.id','GEO.display-label']).rename(columns=colnames)
+
+    #Removes Margin of Error Fields
+    df =df[['blockgroup']+[col for col in df.columns[1:] if int(col[2:4]) == 1]]
+    return df
+
+
 def transform_B19001(df,drop_lowpop = True,add_percents=True):
     #Drops Non-important GEOid
     #Renames GEO.id2 to blockgroup (useful for merging)
@@ -56,3 +66,11 @@ def cluster_B19001(df):
     model.fit(df[X])
     df['Income_Cluster'] = model.predict(df[X])
     return df
+
+
+
+def transform_19013(df):
+
+    df = geo_fix(df)
+    df = df[1:]
+    return df.rename(columns={'HD01_VD01' : 'income_median'})
