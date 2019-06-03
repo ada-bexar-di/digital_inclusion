@@ -1,4 +1,5 @@
 import re
+from sklearn.cluster import KMeans
 
 
 def transform_B19001(df,drop_lowpop = True,add_percents=True):
@@ -16,6 +17,10 @@ def transform_B19001(df,drop_lowpop = True,add_percents=True):
 
     #Rename Column names to more descriptive words
     columnnames = {'HD01_VD01':'pop_tot', 'HD01_VD02':'lessthan_10k','HD01_VD17':'greaterthan_200k'}
+
+
+    # Each of the rest of the column names follow a pattern that looks like $10,000 - $14,000
+    # This regular expression captures that range
     colnums = {col:re.findall(r'\$(\d+),000 to \$(\d+)', str(descp[col])) for col in descp.columns[3:-1] }
     # Colnums is a dict of single element lists, containing a tupple that looks like this
     # ('10','14') which indicates a salary range of 10k-14k
@@ -40,4 +45,14 @@ def transform_B19001(df,drop_lowpop = True,add_percents=True):
         for col in df.columns[2:]:
             df[col+'_p'] = df[col]/df['pop_tot']
 
+    return df
+
+
+
+def cluster_B19001(df):
+    df = transform_B19001(df)
+    X = list(df.columns[18:])
+    model = KMeans(n_clusters=3, random_state=123)
+    model.fit(df[X])
+    df['Income_Cluster'] = model.predict(df[X])
     return df
