@@ -1,7 +1,11 @@
 import re
 from sklearn.cluster import KMeans
 import numpy as np
+<<<<<<< HEAD
 import pandas as pd
+=======
+import pandas as pd
+>>>>>>> 89e15b0f247a1271afdb29658f6b0ee8a2a5a994
 
 b19013_cols = {'HD01_VD01' : 'income_median'}
 b01002_cols = {'HD01_VD02': 'age_median'}
@@ -113,3 +117,20 @@ def transform_B02001(df):
 
 def merge_3(df1,df2,df3):
     return pd.merge(pd.merge(df1,df2),df3)
+
+
+
+def load_cesus(filepath=''):
+
+    if filepath == '':
+        print('Please specify a filepath for the census csvs')
+        return None
+
+    if filepath[-1] is not '/':
+        filepath += '/'
+
+    b01002 = transform_B01002(pd.read_csv(filepath+'ACS_16_5YR_B01002_with_ann.csv'))
+    b02001 = transform_B02001(pd.read_csv(filepath+'ACS_16_5YR_B02001_with_ann.csv'))
+    b19013 = transform_B19013(pd.read_csv(filepath+'ACS_16_5YR_B19013_with_ann.csv'))
+
+    return pd.merge(pd.merge(b01002,b02001),b19013)
