@@ -1,6 +1,7 @@
 import re
 from sklearn.cluster import KMeans
 import numpy as np
+import pandas as pd 
 
 b19013_cols = {'HD01_VD01' : 'income_median'}
 b01002_cols = {'HD01_VD02': 'age_median'}
@@ -112,3 +113,6 @@ def transform_B02001(df):
 
 def merge_3(df1,df2,df3):
     return pd.merge(pd.merge(df1,df2),df3)
+
+
+def prep_
