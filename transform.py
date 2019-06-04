@@ -80,16 +80,28 @@ def transform_B19013(df):
     df = drop_moe(geo_fix(df))
     df = df[1:]
     df = df.rename(columns=b19013_cols)
-    return df[['blockgroup']+list(b19013_cols.values())]
+    df = df[['blockgroup']+list(b19013_cols.values())]
+    df.replace('250,000+','250000',inplace=True)
+    df.replace('-',np.NaN,inplace=True)
+    df.dropna(inplace=True)
+    df['income_median'] = df.income_median.astype('int')
+    return df
 
 def transform_B01002(df):
     df = drop_moe(geo_fix(df))
     df = df[1:]
     df = df.rename(columns= b01002_cols)
-    return df[['blockgroup']+list(b01002_cols.values())]
+    df = df[['blockgroup']+list(b01002_cols.values())]
+    df.age_median.replace('-',np.NaN,inplace=True)
+    df.dropna(inplace=True)
+    df['age_median'] = df1.age_median.astype('float')
+    return df
 
 def transform_B02001(df):
     df = drop_moe(geo_fix(df))
     df = df[1:]
     df = df.rename(columns=b02001_cols)
-    return df[['blockgroup']+list(b02001_cols.values())]
+    df = df[['blockgroup']+list(b02001_cols.values())]
+    for col in df3.columns:
+        df[col] = df3[col].astype('int')
+    return df 
