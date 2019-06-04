@@ -1,11 +1,12 @@
 import re
 from sklearn.cluster import KMeans
 import numpy as np
+import pandas as pd
 
 b19013_cols = {'HD01_VD01' : 'income_median'}
 b01002_cols = {'HD01_VD02': 'age_median'}
 b02001_cols = {'HD01_VD02': 'white', 'HD01_VD03':'African_American','HD01_VD04':'Native_American','HD01_VD05':'Asian',
-    'HD01_VD06':'Hawaiin', 'HD01_VD01':'pop_tot'}
+    'HD01_VD06':'Hawaiian_Pac_Islander', 'HD01_VD01':'pop_tot'}
 
 
 def geo_fix(df):
