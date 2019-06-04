@@ -1,11 +1,7 @@
 import re
 from sklearn.cluster import KMeans
 import numpy as np
-<<<<<<< HEAD
 import pandas as pd
-=======
-import pandas as pd
->>>>>>> 89e15b0f247a1271afdb29658f6b0ee8a2a5a994
 
 b19013_cols = {'HD01_VD01' : 'income_median'}
 b01002_cols = {'HD01_VD02': 'age_median'}
