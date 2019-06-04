@@ -1,5 +1,6 @@
 import re
 from sklearn.cluster import KMeans
+import numpy as np
 
 b19013_cols = {'HD01_VD01' : 'income_median'}
 b01002_cols = {'HD01_VD02': 'age_median'}
@@ -85,6 +86,7 @@ def transform_B19013(df):
     df.replace('-',np.NaN,inplace=True)
     df.dropna(inplace=True)
     df['income_median'] = df.income_median.astype('int')
+    df['blockgroup'] = df.blockgroup.astype('int')
     return df
 
 def transform_B01002(df):
@@ -94,7 +96,8 @@ def transform_B01002(df):
     df = df[['blockgroup']+list(b01002_cols.values())]
     df.age_median.replace('-',np.NaN,inplace=True)
     df.dropna(inplace=True)
-    df['age_median'] = df1.age_median.astype('float')
+    df['age_median'] = df.age_median.astype('float')
+    df['blockgroup'] = df.blockgroup.astype('int')
     return df
 
 def transform_B02001(df):
@@ -102,6 +105,10 @@ def transform_B02001(df):
     df = df[1:]
     df = df.rename(columns=b02001_cols)
     df = df[['blockgroup']+list(b02001_cols.values())]
-    for col in df3.columns:
-        df[col] = df3[col].astype('int')
-    return df 
+    for col in df.columns:
+        df[col] = df[col].astype('int')
+    return df
+
+
+def merge_3(df1,df2,df3):
+    return pd.merge(pd.merge(df1,df2),df3)
