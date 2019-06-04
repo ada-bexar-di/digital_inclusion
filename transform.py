@@ -1,11 +1,8 @@
 import re
 from sklearn.cluster import KMeans
 import numpy as np
-<<<<<<< HEAD
 import pandas as pd
-=======
-import pandas as pd
->>>>>>> 89e15b0f247a1271afdb29658f6b0ee8a2a5a994
+
 
 b19013_cols = {'HD01_VD01' : 'income_median'}
 b01002_cols = {'HD01_VD02': 'age_median'}
@@ -120,7 +117,7 @@ def merge_3(df1,df2,df3):
 
 
 
-def load_cesus(filepath=''):
+def load_census(filepath=''):
 
     if filepath == '':
         print('Please specify a filepath for the census csvs')
@@ -134,3 +131,50 @@ def load_cesus(filepath=''):
     b19013 = transform_B19013(pd.read_csv(filepath+'ACS_16_5YR_B19013_with_ann.csv'))
 
     return pd.merge(pd.merge(b01002,b02001),b19013)
+
+
+def transform_FCC(df):
+    return pd.DataFrame(
+        {'pcat_all_mean': df.groupby('blockgroup')['pcat_all'].mean()
+        ,'pcat_10x1_mean': df.groupby('blockgroup')['pcat_10x1'].mean()
+        ,'pcat_all_median': df.groupby('blockgroup')['pcat_all'].median()
+        ,'pcat_10x1_median': df.groupby('blockgroup')['pcat_10x1'].median()
+         }
+    )
+
+def load_FCC(filepath=''):
+    if filepath == '':
+        print('Please specify a filepath for the census csvs')
+        return None
+
+    if filepath[-1] is not '/':
+        filepath += '/'
+
+    return transform_FCC(pd.read_csv(filepath+'FCC_data.csv')).reset_index()
+
+
+def merge_FCC(filepath=''):
+    if filepath == '':
+        print('Please specify a filepath for the census csvs')
+        return None
+
+    if filepath[-1] is not '/':
+        filepath += '/'
+
+    FCC = load_FCC(filepath)
+    census = load_census(filepath)
+
+    return pd.merge(census,FCC)
+
+
+def load_all(filepath=''):
+
+        if filepath == '':
+            print('Please specify a filepath for the census csvs')
+            return None
+
+        if filepath[-1] is not '/':
+            filepath += '/'
+
+        df = merge_FCC(filepath)
+        return df.drop(columns=['pcat_all_median','pcat_10x1_median','pcat_all_mean'])
