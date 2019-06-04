@@ -6,7 +6,7 @@ import pandas as pd
 
 b19013_cols = {'HD01_VD01' : 'income_median'}
 b01002_cols = {'HD01_VD02': 'age_median'}
-b02001_cols = {'HD01_VD02': 'white', 'HD01_VD03':'African_American','HD01_VD04':'Native_American','HD01_VD05':'Asian',
+b02001_cols = {'HD01_VD02': 'White', 'HD01_VD03':'African_American','HD01_VD04':'Native_American','HD01_VD05':'Asian',
     'HD01_VD06':'Hawaiian_Pac_Islander', 'HD01_VD01':'pop_tot'}
 
 
@@ -177,4 +177,4 @@ def load_all(filepath=''):
             filepath += '/'
 
         df = merge_FCC(filepath)
-        return df.drop(columns=['pcat_all_median','pcat_10x1_median','pcat_all_mean'])
+        return df.drop(columns=['pcat_all_mean','pcat_all_median'])
