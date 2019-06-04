@@ -115,6 +115,16 @@ def transform_B02001(df):
 def merge_3(df1,df2,df3):
     return pd.merge(pd.merge(df1,df2),df3)
 
+def b02001_percents(df):
+    cols = ['White',
+         'African_American',
+         'Native_American',
+         'Asian',
+         'Hawaiian_Pac_Islander'
+         ]
+    for col in cols:
+        df[col+'_p'] = df[col]/df['pop_tot']
+
 
 
 def load_census(filepath=''):
@@ -163,6 +173,8 @@ def merge_FCC(filepath=''):
 
     FCC = load_FCC(filepath)
     census = load_census(filepath)
+    b02001_percents(census)
+
 
     return pd.merge(census,FCC)
 
