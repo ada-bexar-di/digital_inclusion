@@ -64,6 +64,13 @@ def transform_B19001(df,drop_lowpop = True,add_percents=True):
         for col in df.columns[2:]:
             df[col+'_p'] = df[col]/df['pop_tot']
 
+    # Adds additional columns binning/summing income ranges per Maggie recommendation:
+    df['income_0-19k'] = df['lessthan_10k'] + df['10k-14k'] + df['15k-19k']
+    df['income_20-24k'] = df['20k-24k']
+    df['income_25-39k'] = df['25k-29k'] + df['30k-34k'] + df['35k-39k']
+    df['income_40-64k'] = df['40k-44k'] + df['45k-49k'] + df['50k-59k']
+    df['income_65k+'] = df['60k-74k'] + df['75k-99k'] + df['100k-124k'] + df['125k-149k'] + df['150k-199k'] + df['greaterthan_200k']
+
     return df
 
 
