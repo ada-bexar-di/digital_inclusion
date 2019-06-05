@@ -9,6 +9,13 @@ b01002_cols = {'HD01_VD02': 'age_median'}
 b02001_cols = {'HD01_VD02': 'White', 'HD01_VD03':'African_American','HD01_VD04':'Native_American','HD01_VD05':'Asian',
     'HD01_VD06':'Hawaiian_Pac_Islander', 'HD01_VD01':'pop_tot'}
 
+b19001_cols = ['blockgroup',
+         'income_0-19k',
+         'income_20-24k',
+         'income_25-39k',
+         'income_40-64k',
+         'income_65k+']
+
 
 def geo_fix(df):
     df = df.copy()
@@ -132,6 +139,27 @@ def b02001_percents(df):
     for col in cols:
         df[col+'_p'] = df[col]/df['pop_tot']
 
+def transform_B01001(df):
+
+    df = df[1:]
+    df = drop_moe(df.drop(columns=['GEO.id','GEO.display-label']).rename(columns={'GEO.id2':'blockgroup'}))
+    for col in df.columns:
+        df[col] = df[col].astype('int')
+    df['male_age_bin_0-19'] = df.iloc[:,3:8].sum(axis=1)
+    df['male_age_bin_20-29'] = df.iloc[:,8:12].sum(axis=1)
+    df['males_age_bin_30-44'] = df.iloc[:,12:15].sum(axis=1)
+    df['male_age_bin_45-59'] = df.iloc[:,15:18].sum(axis=1)
+    df['male_age_bin_60+'] = df.iloc[:,18:26].sum(axis=1)
+
+    df['female_age_bin_0-19'] = df.iloc[:,27:32].sum(axis=1)
+    df['female_age_bin_20-29'] = df.iloc[:,32:36].sum(axis=1)
+    df['females_age_bin_30-44'] = df.iloc[:,36:39].sum(axis=1)
+    df['female_age_bin_45-59'] = df.iloc[:,39:42].sum(axis=1)
+    df['female_age_bin_60+'] = df.iloc[:,42:50].sum(axis=1)
+
+    return df[['blockgroup']+list(df.columns[50:])]
+
+
 
 
 def load_census(filepath=''):
@@ -146,8 +174,11 @@ def load_census(filepath=''):
     b01002 = transform_B01002(pd.read_csv(filepath+'ACS_16_5YR_B01002_with_ann.csv'))
     b02001 = transform_B02001(pd.read_csv(filepath+'ACS_16_5YR_B02001_with_ann.csv'))
     b19013 = transform_B19013(pd.read_csv(filepath+'ACS_16_5YR_B19013_with_ann.csv'))
+    b19001 = transform_B19001(pd.read_csv(filepath+'ACS_16_5YR_B19001_with_ann.csv'))[b19001_cols]
+    b01001 = transform_B01001(pd.read_csv(filepath+'ACS_16_5YR_B01001_with_ann.csv'))
 
-    return pd.merge(pd.merge(b01002,b02001),b19013)
+
+    return pd.merge(pd.merge(pd.merge(b01001,b02001),b19013),b19001)
 
 
 def transform_FCC(df):
@@ -172,7 +203,7 @@ def load_FCC(filepath=''):
 
 def merge_FCC(filepath=''):
     if filepath == '':
-        print('Please specify a filepath for the census csvs')
+        print('Please specify a filepath for the FCC csv')
         return None
 
     if filepath[-1] is not '/':
