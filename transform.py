@@ -220,6 +220,7 @@ def merge_FCC(filepath=''):
     FCC = load_FCC(filepath)
     census = load_census(filepath)
     b02001_percents(census)
+    census = census.drop(columns=b02001_cols.values())
 
 
     return pd.merge(census,FCC)
