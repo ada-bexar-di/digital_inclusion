@@ -78,7 +78,10 @@ def transform_B19001(df,drop_lowpop = True,add_percents=True):
     df['income_40-64k'] = df['40k-44k'] + df['45k-49k'] + df['50k-59k']
     df['income_65k+'] = df['60k-74k'] + df['75k-99k'] + df['100k-124k'] + df['125k-149k'] + df['150k-199k'] + df['greaterthan_200k']
 
-    return df
+    for col in df.columns[-5:]:
+        df[col+'_p'] =  df[col]/df['pop_tot']
+
+    return df[['blockgroup']+list(df.columns[-5:])]
 
 
 
@@ -143,6 +146,7 @@ def transform_B01001(df):
 
     df = df[1:]
     df = drop_moe(df.drop(columns=['GEO.id','GEO.display-label']).rename(columns={'GEO.id2':'blockgroup'}))
+    df.rename(columns={'HD01_VD01':'pop_tot'},inplace=True)
     for col in df.columns:
         df[col] = df[col].astype('int')
     df['male_age_bin_0-19'] = df.iloc[:,3:8].sum(axis=1)
@@ -157,7 +161,11 @@ def transform_B01001(df):
     df['female_age_bin_45-59'] = df.iloc[:,39:42].sum(axis=1)
     df['female_age_bin_60+'] = df.iloc[:,42:50].sum(axis=1)
 
-    return df[['blockgroup']+list(df.columns[50:])]
+
+    for col in df.columns[-10:]:
+        df[col+'_p'] = df[col] / df['pop_tot']
+
+    return df[['blockgroup']+list(df.columns[-10:])]
 
 
 
@@ -174,7 +182,7 @@ def load_census(filepath=''):
     b01002 = transform_B01002(pd.read_csv(filepath+'ACS_16_5YR_B01002_with_ann.csv'))
     b02001 = transform_B02001(pd.read_csv(filepath+'ACS_16_5YR_B02001_with_ann.csv'))
     b19013 = transform_B19013(pd.read_csv(filepath+'ACS_16_5YR_B19013_with_ann.csv'))
-    b19001 = transform_B19001(pd.read_csv(filepath+'ACS_16_5YR_B19001_with_ann.csv'))[b19001_cols]
+    b19001 = transform_B19001(pd.read_csv(filepath+'ACS_16_5YR_B19001_with_ann.csv'))
     b01001 = transform_B01001(pd.read_csv(filepath+'ACS_16_5YR_B01001_with_ann.csv'))
 
 
