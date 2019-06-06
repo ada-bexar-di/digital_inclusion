@@ -122,8 +122,7 @@ def transform_B03003(df):
 
 def b03003_percents(df):
     cols = ['pop_tot','Hispanic/Latino']
-    for col in cols:
-        df[col+'_p'] = df[col]/df['pop_tot']
+    df['Hispanic/Latino_p'] = df['Hispanic/Latino']/df['pop_tot']
 
 def transform_B01002(df):
     df = drop_moe(geo_fix(df))
@@ -238,7 +237,11 @@ def merge_FCC(filepath=''):
     census = load_census(filepath)
     b02001_percents(census)
     b03003_percents(census)
-    census = census.drop(columns=b02001_cols.values())
+
+    b02001_columns = ['White', 'African_American','Native_American','Asian',
+        'Hawaiian_Pac_Islander']
+
+    census = census.drop(columns=b02001_columns)
 
 
     return pd.merge(census,FCC)
