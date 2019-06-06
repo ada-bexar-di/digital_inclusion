@@ -9,6 +9,8 @@ b01002_cols = {'HD01_VD02': 'age_median'}
 b02001_cols = {'HD01_VD02': 'White', 'HD01_VD03':'African_American','HD01_VD04':'Native_American','HD01_VD05':'Asian',
     'HD01_VD06':'Hawaiian_Pac_Islander', 'HD01_VD01':'pop_tot'}
 
+b03003_cols={'HD01_VD01':'pop_tot', 'HD01_VD03':'Hispanic/Latino'}
+
 b19001_cols = ['blockgroup',
          'income_0-19k',
          'income_20-24k',
@@ -108,6 +110,21 @@ def transform_B19013(df):
     df['blockgroup'] = df.blockgroup.astype('int')
     return df
 
+def transform_B03003(df):
+
+    df = drop_moe(geo_fix(df))
+    df = df[1:]
+    df = df.rename(columns=b03003_cols)
+    df = df[['blockgroup']+list(b03003_cols.values())]
+    for col in df.columns:
+        df[col] = df[col].astype('int')
+    return df
+
+def b03003_percents(df):
+    cols = ['pop_tot','Hispanic/Latino']
+    for col in cols:
+        df[col+'_p'] = df[col]/df['pop_tot']
+
 def transform_B01002(df):
     df = drop_moe(geo_fix(df))
     df = df[1:]
@@ -184,9 +201,9 @@ def load_census(filepath=''):
     b19013 = transform_B19013(pd.read_csv(filepath+'ACS_16_5YR_B19013_with_ann.csv'))
     b19001 = transform_B19001(pd.read_csv(filepath+'ACS_16_5YR_B19001_with_ann.csv'))
     b01001 = transform_B01001(pd.read_csv(filepath+'ACS_16_5YR_B01001_with_ann.csv'))
+    b03003 = transform_B03003(pd.read_csv(filepath+'ACS_16_5YR_B03003_with_ann.csv'))
 
-
-    return pd.merge(pd.merge(pd.merge(b01001,b02001),b19013),b19001)
+    return pd.merge(pd.merge(pd.merge(pd.merge(b01001,b02001),b19013),b19001),b03003)
 
 
 def transform_FCC(df):
@@ -220,6 +237,7 @@ def merge_FCC(filepath=''):
     FCC = load_FCC(filepath)
     census = load_census(filepath)
     b02001_percents(census)
+    b03003_percents(census)
     census = census.drop(columns=b02001_cols.values())
 
 
@@ -236,4 +254,4 @@ def load_all(filepath=''):
             filepath += '/'
 
         df = merge_FCC(filepath)
-        return df.drop(columns=['pcat_all_mean','pcat_all_median'])
+        return df.drop(columns=['pcat_all_mean','pcat_all_median', 'Hispanic/Latino'])
